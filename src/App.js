@@ -9,6 +9,18 @@ function App(props) {
   console.log(props)
 
   const [tasks, setTasks] = useState(props.tasks);
+  
+  function editTask(id, newName) {
+    const editedTaskList = tasks.map(task => {
+    // if this task has the same ID as the edited task
+      if (id === task.id) {
+        //
+        return {...task, name: newName}
+      }
+      return task;
+    });
+    setTasks(editedTaskList);
+  }
 
   function toggleTaskCompleted(id) {
     const updatedTasks = tasks.map(task => {
@@ -16,13 +28,13 @@ function App(props) {
       if (id === task.id) {
         // use object spread to make a new object
         // whose `completed` prop has been inverted
-        return {...task, completed: !task.completed}
+        return { ...task, completed: !task.completed }
       }
       return task;
     });
     setTasks(updatedTasks);
   }
-  
+
   function deleteTask(id) {
     const remainingTasks = tasks.filter(task => id !== task.id);
     setTasks(remainingTasks);
@@ -30,20 +42,24 @@ function App(props) {
 
   const taskList = tasks.map(task => (
     <Todo id={task.id} name={task.name} completed={task.completed} key={task.id}
-      toggleTaskCompleted={toggleTaskCompleted}  deleteTask={deleteTask} />
+      toggleTaskCompleted={toggleTaskCompleted} deleteTask={deleteTask} editTask={editTask} />
   ));
 
   function addTask(name) {
+    if (name.trim() === '') {
+      alert("Name cannot be blank");
+      return
+    }
     const newTask = { id: "todo-" + nanoid(), name: name, completed: false };
     setTasks([...tasks, newTask]);
   }
 
   const tasksNoun = taskList.length !== 1 ? 'tasks' : 'task';
-const headingText = `${taskList.length} ${tasksNoun} remaining`;
+  const headingText = `${taskList.length} ${tasksNoun} remaining`;
 
   return (
     <div className="todoapp stack-large">
-      <Form addTask={addTask}/>
+      <Form addTask={addTask} />
       <div className="filters btn-group stack-exception">
         <FilterButton />
         <FilterButton />
